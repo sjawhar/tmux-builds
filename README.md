@@ -20,6 +20,13 @@ Two types of builds are provided:
 - **Release builds:** Stable versions of tmux (e.g. v3.6a).  
 - **Preview builds:** Built from the latest `master` commit; may include experimental features or unstable changes.
 
+## Patched builds
+
+This fork can carry upstream tmux fixes that no tmux release contains yet.
+A tag `v<upstream>-<suffix>` (e.g. `v3.8-fix5776`) builds upstream tmux
+`<upstream>` with every patch in [`patches/`](./patches/) applied. See
+[`patches/README.md`](./patches/README.md) for each patch's provenance.
+
 ## Installation
 
 1. Go to the [releases](https://github.com/tmux/tmux-builds/releases) page.  

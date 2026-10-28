@@ -11,18 +11,31 @@ if [[ -z "${TMUX_VERSION:-}" ]]; then
     exit 1
 fi
 
+SCRIPTDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PATCHDIR="${SCRIPTDIR}/../patches"
+
+# A release tag such as 3.8-fix5776 builds upstream 3.8 plus patches/.
+UPSTREAM_VERSION="${TMUX_VERSION%%-*}"
+
 mkdir -p "$PREFIX/src"
 cd "$PREFIX/src"
 
-if [[ "${TMUX_VERSION}" == "preview" ]]; then
+if [[ "${UPSTREAM_VERSION}" == "preview" ]]; then
     git clone https://github.com/tmux/tmux.git
     cd tmux
     sh autogen.sh
 else
-    wget "https://github.com/tmux/tmux/releases/download/${TMUX_VERSION}/tmux-${TMUX_VERSION}.tar.gz"
-    tar xzf "tmux-${TMUX_VERSION}.tar.gz"
-    cd "tmux-${TMUX_VERSION}"
+    wget "https://github.com/tmux/tmux/releases/download/${UPSTREAM_VERSION}/tmux-${UPSTREAM_VERSION}.tar.gz"
+    tar xzf "tmux-${UPSTREAM_VERSION}.tar.gz"
+    cd "tmux-${UPSTREAM_VERSION}"
 fi
+
+shopt -s nullglob
+for p in "${PATCHDIR}"/*.patch; do
+    echo "Applying $(basename "$p")"
+    patch -p1 --forward --batch < "$p"
+done
+shopt -u nullglob
 
 IS_MACOS=false
 if [[ "$(uname)" == "Darwin" ]]; then
